@@ -1,0 +1,33 @@
+name: Docker
+
+on:
+  release:
+    types: [published]
+
+env:
+  DOCKER_IMAGE_NAME: suisrc/cloudflare-ddns
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build . --file Dockerfile --tag image
+
+      - name: Push docker image
+        run: |
+          REGISTRY_URL=docker.io
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login $REGISTRY_URL -u ${{ secrets.DOCKER_USER }} --password-stdin
+
+          IMAGE_ID=$REGISTRY_URL/$DOCKER_IMAGE_NAME
+          echo IMAGE_ID=$IMAGE_ID
+
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          echo VERSION=$VERSION
+
+          docker tag image $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
