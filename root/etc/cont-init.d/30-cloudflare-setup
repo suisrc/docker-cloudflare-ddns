@@ -92,5 +92,5 @@ echo "CF_ZONE_ID=\"$CFZoneId\" CF_RECORD_ID=\"$CFDnsRecordId\" CF_RECORD_NAME=\"
 if [ -z "$UPDATE_CRON" ]; then
   UPDATE_CRON="0	*/2	*	*	*"
 fi
-echo UPDATE_CRON=$UPDATE_CRON
+echo UPDATE_CRON="$UPDATE_CRON"
 echo "$UPDATE_CRON	/etc/cont-init.d/50-ddns" > /var/spool/cron/crontabs/root
